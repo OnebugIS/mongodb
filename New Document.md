@@ -1,0 +1,130 @@
+Mongodb术语
+![ss](http://pan.baidu.com/s/1bp4M7G7)
+一、下载
+http://www.mongodb.org/downloads
+  
+在安装的bin文件夹下打开控制台  要先创建一个数据库文件夹
+C:\mongodb-win32-x86_64-3.0.6\bin>mongod.exe --dbpath= 
+比如在d盘。。。创建text文件夹  复制文件夹路径 
+D:\Documents\Desktop\js(3) \nodejs\day4\test
+
+C:\mongodb-win32-x86_64-3.0.6\bin>mongod.exe --dbpath= D:\Documents\Desktop\js(3) \nodejs\day4\test回车 
+这个过程叫创建数据库目录  另在bin文件夹下打开控制台并在此输入指令 创建数据库目录的指令不要关闭才可以运行控制指令
+再在bin文件夹下打开指令 输入
+mongo.exe回车 就可以进行其他指令命令
+use test107 创建test1707文件夹 切换数据库
+show dbs 查询数据库
+db/db.getName() 查看当前使用的数据库
+db.createCollection(“users”)创建users聚集集合
+db.getCollection(“users”)得到指定的聚集集合
+(3)	得到当前db的所有聚集集合
+db.getCollectionNames();
+(4)	显示当前db所有聚集的状态
+db.printCollectionStats();
+
+(1)	添加
+db.users.save({name: ‘zhangsan', age: 25, sex: true});
+db.users.save([{name: ‘zhangsan', age: 25, sex: true},{name:”kerin”,age:100}]);
+(2)	修改
+db.users.update({age: 25}, {$set: {name: 'changeName'}}, false, true);
+相当于：update users set name = ‘changeName' where age = 25;//将符合age 25的  是否插入新的name值
+False为默认 不插入 true为插入
+db.users.update({name: 'Lisi'}, {$inc: {age: 50}}, false, true);
+相当于：update users set age = age + 50 where name = ‘Lisi';//将符合name Lisi的 
+是否只更改第一条age为50  false为默认 只更改第一条 true为符合条件的全部更新
+db.users.update({name: 'Lisi'}, {$inc: {age: 50}, $set: {name: kerwin'}}, false, true);
+相当于：update users set age = age + 50, name = ‘hoho' where name = ‘kerwin';
+(3)	删除
+db.users.remove({age: 132});
+
+(1)	查询所有记录
+db.userInfo.find();
+相当于：select* from userInfo;
+(2)	查询某字段去重后数据
+db.userInfo.distinct("name");
+相当于：select distict name from userInfo;
+(3)	查询age = 22的记录
+db.userInfo.find({"age": 22});
+相当于： select * from userInfo where age = 22;
+(4)	查询age > 22的记录
+db.userInfo.find({age: {$gt: 22}});
+相当于：select * from userInfo where age >22;
+(5)	查询age < 22的记录
+db.userInfo.find({age: {$lt: 22}});
+相当于：select * from userInfo where age <22
+
+(6)	查询age >= 25的记录
+db.userInfo.find({age: {$gte: 25}});
+相当于：select * from userInfo where age >= 25;
+(7)	查询age <= 25的记录
+db.userInfo.find({age: {$lte: 25}});
+(8)	查询age >= 23 并且 age <= 26
+db.userInfo.find({age: {$gte: 23, $lte: 26}});
+(9)	查询name中包含 mongo的数据
+db.userInfo.find({name: /mongo/});
+//相当于%%
+select * from userInfo where name like ‘%mongo%’;
+(10)	查询name中以mongo开头的
+db.userInfo.find({name: /^mongo/});
+select * from userInfo where name like ‘mongo%’;
+
+(11)	查询指定列name、age数据(想显示哪列，就将字段设置为1，不想显示就设置成0)
+db.userInfo.find({}, {name: 1, age: 1});
+相当于：select name, age from userInfo;
+(12)	查询指定列name、age数据, age > 25
+db.userInfo.find({age: {$gt: 25}}, {name: 1, age: 1});
+相当于：select name, age from userInfo where age >25;
+(13)	按照年龄排序（写成数组就是多列查询）
+升序：db.userInfo.find().sort({age: 1});
+降序：db.userInfo.find().sort({age: -1});
+(14)	查询name = zhangsan, age = 22的数据
+db.userInfo.find({name: 'zhangsan', age: 22});
+相当于：select * from userInfo where name = ‘zhangsan' and age = ’22';
+(15)	查询前5条数据
+db.userInfo.find().limit(5);
+相当于：select top 5 * from userInfo;
+
+(16)	查询10条以后的数据
+db.userInfo.find().skip(10);
+相当于：select * from userInfo where id not in (
+   select top 10 * from userInfo
+);
+(17)	查询在5-10之间的数据
+db.userInfo.find().skip(5).limit(10); //打印6 7 8 9 10 条
+实际中写法db.userInfo.find().skip(5*n).limit(10);
+(18)	or与 查询
+db.userInfo.find({$or: [{age: 22}, {age: 25}]});
+相当于：select * from userInfo where age = 22 or age = 25;
+(19)	查询第一条数据
+db.userInfo.findOne();
+相当于：selecttop 1 * from userInfo;
+db.userInfo.find().limit(1);
+(20)	查询某个结果集的记录条数
+db.userInfo.find({age: {$gte: 25}}).count();
+相当于：select count(*) from userInfo where age >= 20;
+
+
+其他
+(1)	Help查看命令提示
+help
+db.help()
+db.test.help()
+db.test.find().help()
+(2)	创建/切换数据库
+use music
+(3)	查询数据库
+show dbs
+(4)	查看当前使用的数据库
+db/db.getName()
+(5)	显示当前DB状态
+db.stats()
+(6)	查看当前DB版本
+db.version()
+(7)	查看当前DB的链接机器地址
+db.getMongo()
+(8)	删除数据库
+db.dropDatabase()
+
+robomongo可视化使用creat
+name随便
+add   localhost 27017是
